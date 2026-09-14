@@ -32,7 +32,7 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
-  if (!url.pathname.startsWith(B)) return;
+  if (B !== "/" && !url.pathname.startsWith(B)) return;
 
   // /status never goes through this service worker: self-hosted the vhost
   // proxies it; on GitHub Pages the app fetches it cross-origin directly.
