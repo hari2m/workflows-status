@@ -50,8 +50,21 @@
       (ok ? "&#10003;" : "&#10007;") + "</span>";
   }
 
+  // Self-hosted: same origin, the vhost proxies /status to the container.
+  // GitHub Pages: cross-origin, so go through the /status proxy route
+  // (same JSON, CORS *, no credentials) on workflows.supremeporter.com.
+  // Self-hosted: same origin, the vhost proxies /status to the container.
+  // GitHub Pages: cross-origin, so go through the /status.js proxy worker
+  // (same JSON, CORS *, no credentials) installed on this origin.
+  function statusUrl(query) {
+    const selfHosted =
+      location.hostname === "workflows.supremeporter.com" ||
+      location.hostname === "localhost";
+    return selfHosted ? "/status" + query : "/status.js" + query;
+  }
+
   async function fetchStatus(query) {
-    const res = await fetch("/status" + query, { cache: "no-store" });
+    const res = await fetch(statusUrl(query), { cache: "no-store" });
     if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   }
@@ -161,7 +174,12 @@
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      const selfHosted =
+        location.hostname === "workflows.supremeporter.com" ||
+        location.hostname === "localhost";
+      navigator.serviceWorker
+        .register(selfHosted ? window.APP_BASE + "sw.js" : "status.js")
+        .catch(() => {});
     });
   }
 
