@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d0d">
+  <title>Workflows</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Workflows">
+</head>
+<body>
+  <main id="home-view" class="view">
+    <div class="topbar">
+      <h1>Workflows</h1>
+      <button id="home-refresh" class="iconbtn" type="button" title="Refresh" aria-label="Refresh">&#8635;</button>
+    </div>
+    <p id="generated-at" class="meta" hidden></p>
+    <div id="home-error" class="error" hidden></div>
+    <div id="home-cards" class="cards"></div>
+    <p id="home-footer" class="footer">Jobs with recent runs only</p>
+  </main>
+  <main id="job-view" class="view" hidden>
+    <div class="topbar">
+      <button id="back" class="iconbtn" type="button" title="Back" aria-label="Back">&larr;</button>
+      <h1 id="job-name"></h1>
+      <button id="job-refresh" class="iconbtn" type="button" title="Refresh" aria-label="Refresh">&#8635;</button>
+    </div>
+    <div id="job-error" class="error" hidden></div>
+    <div id="job-rows" class="rows"></div>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
