@@ -51,28 +51,18 @@
   }
 
   // Self-hosted: same origin, the vhost proxies /status to the container.
-  // GitHub Pages: cross-origin, so go through the /status proxy route
-  // (same JSON, CORS *, no credentials) on workflows.supremeporter.com.
-  // Self-hosted: same origin, the vhost proxies /status to the container.
-  // GitHub Pages: cross-origin, so go through the /status.js proxy worker
-  // (same JSON, CORS *, no credentials) installed on this origin.
+  // GitHub Pages: cross-origin fetch of the same vhost, which sends
+  // Access-Control-Allow-Origin: * (Apache mod_headers). Auth-free endpoint,
+  // no credentials involved.
   function statusUrl(query) {
     const selfHosted =
       location.hostname === "workflows.supremeporter.com" ||
       location.hostname === "localhost";
-    return selfHosted ? "/status" + query : "/status.js" + query;
+    return (selfHosted ? "" : "https://workflows.supremeporter.com") + "/status" + query;
   }
 
   async function fetchStatus(query) {
-    let res;
-    try {
-      res = await fetch(statusUrl(query), { cache: "no-store" });
-    } catch (netErr) {
-      // Network-level failure: on the self-hosted origin the status route
-      // is proxied by Apache; if that is misconfigured or down, go through
-      // the /status.js proxy worker instead (it targets the same endpoint).
-      res = await fetch("/status.js" + query, { cache: "no-store" });
-    }
+    const res = await fetch(statusUrl(query), { cache: "no-store" });
     if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   }
@@ -182,12 +172,7 @@
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      const selfHosted =
-        location.hostname === "workflows.supremeporter.com" ||
-        location.hostname === "localhost";
-      navigator.serviceWorker
-        .register(selfHosted ? window.APP_BASE + "sw.js" : "status.js")
-        .catch(() => {});
+      navigator.serviceWorker.register(window.APP_BASE + "sw.js").catch(() => {});
     });
   }
 
